@@ -1,0 +1,23 @@
+# Diretórios de compilação
+build/
+cmake-build-*/
+
+# Arquivos locais do Qt Creator
+.qtcreator/
+*.user
+*.user.*
+
+# Arquivos gerados pelo CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+
+# Arquivos compilados
+*.o
+*.obj
+*.exe
+*.dll
+*.a
+*.lib

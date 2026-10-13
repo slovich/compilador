@@ -2,6 +2,20 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFileSystemModel>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QMessageBox>
+#include <QTextCursor>
+#include <QStandardItemModel>
+#include <QStandardItem>
+#include <QHeaderView>
+#include <QXmlStreamWriter>
+#include "analisadorlexico.h"
+#include "token.h"
+#include "realcelexico.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,8 +30,26 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+    void inicializarModels(QString, QStringList);
+    void gerarResumo();
+    void gerarCodigo();
+    void gerarListaTokens();
+
+private slots:
+    void on_treeView_dir_clicked(const QModelIndex &index);
+    void on_pushButton_selecionar_clicked();
+
+    void on_pushButton_exportar_clicked();
+
+    void on_actionSair_2_triggered();
 
 private:
     Ui::MainWindow *ui;
+    QString system_root, caminhoArquivoAnalisado, codigoFonteAnalisado;;
+    QStringList ext;
+    QFileSystemModel *dirmodel, *filemodel;
+    QVector<Token> tokens;
+    RealceLexico *realceLexico;
+    QStandardItemModel *modeloTokens = nullptr;
 };
 #endif // MAINWINDOW_H

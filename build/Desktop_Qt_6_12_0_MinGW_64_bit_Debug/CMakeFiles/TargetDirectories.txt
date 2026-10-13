@@ -1,9 +1,0 @@
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/compilador.dir
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/edit_cache.dir
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/rebuild_cache.dir
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/list_install_components.dir
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/install.dir
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/install/local.dir
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/install/strip.dir
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/compilador_autogen_timestamp_deps.dir
-E:/Projetos/Compiladores/compilador/build/Desktop_Qt_6_12_0_MinGW_64_bit_Debug/CMakeFiles/compilador_autogen.dir

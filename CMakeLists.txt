@@ -23,6 +23,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(compilador
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        assets.qrc
+        analisadorlexico.h analisadorlexico.cpp
+        realcelexico.h realcelexico.cpp
+        token.h token.cpp
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET compilador APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
