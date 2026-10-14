@@ -67,6 +67,7 @@ void MainWindow::on_treeView_dir_clicked(const QModelIndex &index)
 
 void MainWindow::on_pushButton_selecionar_clicked()
 {
+    ui->tabWidget->setTabEnabled(1, false);
     QModelIndex indice = ui->listView_file->currentIndex();
     if (!indice.isValid()) {
         QMessageBox::warning(
@@ -112,6 +113,8 @@ void MainWindow::on_pushButton_selecionar_clicked()
     gerarListaTokens();
     // Habilita a exportação dos tokens analisados.
     ui->pushButton_exportar->setEnabled(true);
+    // Habilita a aba do analisador sintático.
+    ui->tabWidget->setTabEnabled(1, true);
     QMessageBox::information(
         this,
         "Análise concluída",
