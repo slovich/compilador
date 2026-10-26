@@ -13,8 +13,10 @@
 #include <QStandardItem>
 #include <QHeaderView>
 #include <QXmlStreamWriter>
+#include <Qstack>
 #include "dialogsobre.h"
 #include "analisadorlexico.h"
+#include "analisadorsintatico.h"
 #include "token.h"
 #include "realcelexico.h"
 
@@ -40,16 +42,18 @@ private slots:
     void on_treeView_dir_clicked(const QModelIndex &index);
     void on_pushButton_selecionar_clicked();
     void on_pushButton_exportar_clicked();
+    void on_pushButton_exportar_xml_sintatico_clicked();
     void on_actionSair_2_triggered();    
     void on_actionSobre_triggered();
 
 private:
+    void gerarArvoreSintatica();
     Ui::MainWindow *ui;
-    QString system_root, caminhoArquivoAnalisado, codigoFonteAnalisado;;
+    QString system_root, caminhoArquivoAnalisado, codigoFonteAnalisado, xmlSintatico;
     QStringList ext;
     QFileSystemModel *dirmodel, *filemodel;
     QVector<Token> tokens;
     RealceLexico *realceLexico;
-    QStandardItemModel *modeloTokens = nullptr;
+    QStandardItemModel *modeloTokens = nullptr, *modeloArvoreSintatica = nullptr;
 };
 #endif // MAINWINDOW_H

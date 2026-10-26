@@ -28,6 +28,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         realcelexico.h realcelexico.cpp
         token.h token.cpp
         dialogsobre.h dialogsobre.cpp dialogsobre.ui
+        analisadorsintatico.h analisadorsintatico.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

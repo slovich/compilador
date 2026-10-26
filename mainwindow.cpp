@@ -124,15 +124,45 @@ void MainWindow::on_pushButton_selecionar_clicked()
     gerarListaTokens();
     // Habilita a exportação dos tokens analisados.
     ui->pushButton_exportar->setEnabled(true);
-    // Habilita a aba do analisador sintático.
-    ui->tabWidget->setTabEnabled(1, true);
-    QMessageBox::information(
-        this,
-        "Análise concluída",
-        QString("Arquivo analisado com sucesso.\n"
-                "Quantidade de tokens: %1")
-            .arg(tokens.size())
-        );
+
+    // Executa a análise sintática após o sucesso da análise léxica.
+    AnalisadorSintatico analisadorSintatico(tokens);
+    const bool sintaxeValida = analisadorSintatico.analisar();
+
+    // Armazena o XML e a mensagem de erro da análise sintática.
+    xmlSintatico = analisadorSintatico.obterXML();
+    const QString erroSintatico = analisadorSintatico.obterErro();
+
+    if (sintaxeValida) {
+        ui->tabWidget->setTabEnabled(1, true);
+
+        // Exibe o XML produzido pelo analisador sintático.
+        ui->textEdit_xml->setPlainText(xmlSintatico);
+        ui->textEdit_xml->setReadOnly(true);
+        // Gera a representação hierárquica da árvore sintática.
+        gerarArvoreSintatica();
+
+        QMessageBox::information(
+            this,
+            "Análise concluída",
+            QString("Análise léxica: concluída com sucesso.\n"
+                    "Análise sintática: concluída com sucesso.\n"
+                    "Quantidade de tokens: %1")
+                .arg(tokens.size())
+            );
+    } else {
+        ui->tabWidget->setTabEnabled(1, false);
+
+        QMessageBox::warning(
+            this,
+            "Resultado das análises",
+            QString("Análise léxica: concluída com sucesso.\n"
+                    "Quantidade de tokens: %1\n\n"
+                    "Análise sintática: falhou.\n%2")
+                .arg(tokens.size())
+                .arg(erroSintatico)
+            );
+    }
 }
 
 void MainWindow::gerarResumo() {
@@ -400,5 +430,83 @@ void MainWindow::on_actionSobre_triggered()
 {
     DialogSobre *sobre =  new DialogSobre;
     sobre->show();
+}
+
+
+void MainWindow::on_pushButton_exportar_xml_sintatico_clicked()
+{
+
+}
+
+void MainWindow::gerarArvoreSintatica()
+{
+    // Cria o modelo da árvore na primeira execução.
+    if (modeloArvoreSintatica == nullptr) {
+        modeloArvoreSintatica = new QStandardItemModel(this);
+        ui->treeView_xml->setModel(modeloArvoreSintatica);
+    }
+
+    // Limpa os dados da análise anterior.
+    modeloArvoreSintatica->clear();
+
+    // Define o cabeçalho da árvore.
+    modeloArvoreSintatica->setHorizontalHeaderLabels(
+        QStringList() << "Estrutura sintática"
+        );
+
+    // Prepara a leitura do XML produzido pelo analisador sintático.
+    QXmlStreamReader leitor(xmlSintatico);
+
+    // Mantém o item correspondente ao elemento XML atual.
+    QStack<QStandardItem *> pilha;
+
+    while (!leitor.atEnd()) {
+        leitor.readNext();
+
+        if (leitor.isStartElement()) {
+            // Cria um item com o nome da tag XML.
+            QStandardItem *item =
+                new QStandardItem(leitor.name().toString());
+
+            item->setEditable(false);
+
+            // Insere o item na posição hierárquica correta.
+            if (pilha.isEmpty()) {
+                modeloArvoreSintatica->appendRow(item);
+            } else {
+                pilha.top()->appendRow(item);
+            }
+
+            // O elemento recém-criado passa a ser o elemento atual.
+            pilha.push(item);
+
+        } else if (leitor.isCharacters()
+                   && !leitor.text().toString().trimmed().isEmpty()) {
+
+            // Cria um item para o conteúdo textual da tag.
+            QStandardItem *itemTexto =
+                new QStandardItem(leitor.text().toString().trimmed());
+
+            itemTexto->setEditable(false);
+
+            if (!pilha.isEmpty()) {
+                pilha.top()->appendRow(itemTexto);
+            }
+
+        } else if (leitor.isEndElement()) {
+            // Finaliza o elemento atual.
+            if (!pilha.isEmpty()) {
+                pilha.pop();
+            }
+        }
+    }
+
+    // Ajusta a apresentação da árvore.
+    ui->treeView_xml->setEditTriggers(
+        QAbstractItemView::NoEditTriggers
+        );
+
+    ui->treeView_xml->setUniformRowHeights(true);
+    ui->treeView_xml->expandAll();
 }
 
