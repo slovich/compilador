@@ -57,10 +57,21 @@ void MainWindow::inicializarModels(QString system_root, QStringList ext)
     filemodel->setNameFilterDisables(false);
 }
 
-void MainWindow::on_treeView_dir_clicked(const QModelIndex &index)
+/*void MainWindow::on_treeView_dir_clicked(const QModelIndex &index)
 {
     QString novocaminho = dirmodel->fileInfo(index).absolutePath();
     ui->listView_file->setRootIndex(filemodel->setRootPath(novocaminho));
+}*/
+
+void MainWindow::on_treeView_dir_clicked(const QModelIndex &index)
+{
+    if (!index.isValid()) {
+        return;
+    }
+    // Usa o caminho do próprio diretório selecionado.
+    const QString novoCaminho = dirmodel->filePath(index);
+    const QModelIndex indiceRaiz = filemodel->setRootPath(novoCaminho);
+    ui->listView_file->setRootIndex(indiceRaiz);
 }
 
 
