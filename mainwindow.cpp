@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     ext << "*.jack";                                    //define as extensões dos arquivos que devem ser exibidos
     inicializarModels(system_root, ext);
     realceLexico = new RealceLexico(ui->textEdit_codigo->document());
+    realceSintatico = new RealceSintatico(ui->textEdit_xml->document());
 
     connect(ui->listView_file->selectionModel(), &QItemSelectionModel::selectionChanged, this, [=](const QItemSelection &selected, const QItemSelection &deselected){
         bool temSelecao = ui->listView_file->selectionModel()->hasSelection();  // Verifica se existe pelo menos um item selecionado na lista
@@ -79,6 +80,7 @@ void MainWindow::on_treeView_dir_clicked(const QModelIndex &index)
 void MainWindow::on_pushButton_selecionar_clicked()
 {
     ui->tabWidget->setTabEnabled(1, false);
+    ui->pushButton_exportar_xml_sintatico->setEnabled(false);
     QModelIndex indice = ui->listView_file->currentIndex();
     if (!indice.isValid()) {
         QMessageBox::warning(
@@ -136,8 +138,20 @@ void MainWindow::on_pushButton_selecionar_clicked()
     if (sintaxeValida) {
         ui->tabWidget->setTabEnabled(1, true);
 
+        // Habilita a exportação do XML sintático válido.
+        ui->pushButton_exportar_xml_sintatico->setEnabled(true);
+
         // Exibe o XML produzido pelo analisador sintático.
-        ui->textEdit_xml->setPlainText(xmlSintatico);
+        QDomDocument documentoXml;
+        QString erro;
+        int linha;
+        int coluna;
+
+        if (documentoXml.setContent(xmlSintatico, &erro, &linha, &coluna)) {
+            ui->textEdit_xml->setPlainText(documentoXml.toString(4));
+        } else {
+            ui->textEdit_xml->setPlainText(xmlSintatico);
+        }
         ui->textEdit_xml->setReadOnly(true);
         // Gera a representação hierárquica da árvore sintática.
         gerarArvoreSintatica();
@@ -432,10 +446,84 @@ void MainWindow::on_actionSobre_triggered()
     sobre->show();
 }
 
-
 void MainWindow::on_pushButton_exportar_xml_sintatico_clicked()
 {
+    // Verifica se existe um XML sintático válido para exportar.
+    if (xmlSintatico.isEmpty() || caminhoArquivoAnalisado.isEmpty()) {
+        QMessageBox::warning(
+            this,
+            "Exportação XML sintático",
+            "Não existe um XML sintático válido para exportação."
+            );
+        return;
+    }
 
+    // Sugere o nome do XML com base no arquivo Jack analisado.
+    QFileInfo arquivoInfo(caminhoArquivoAnalisado);
+
+    QString nomeSugerido =
+        arquivoInfo.absolutePath()
+        + "/"
+        + arquivoInfo.completeBaseName()
+        + "_sintatico.xml";
+
+    // Solicita ao usuário o destino do arquivo.
+    QString caminhoXML = QFileDialog::getSaveFileName(
+        this,
+        "Salvar XML sintático",
+        nomeSugerido,
+        "Arquivos XML (*.xml)"
+        );
+
+    // O usuário cancelou a janela.
+    if (caminhoXML.isEmpty()) {
+        return;
+    }
+
+    // Acrescenta a extensão .xml, se necessário.
+    if (!caminhoXML.endsWith(".xml", Qt::CaseInsensitive)) {
+        caminhoXML += ".xml";
+    }
+
+    // Abre o arquivo de destino.
+    QFile arquivoXML(caminhoXML);
+
+    if (!arquivoXML.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::critical(
+            this,
+            "Erro na exportação",
+            "Não foi possível criar o arquivo XML:\n"
+                + caminhoXML
+            );
+        return;
+    }
+
+    // Grava o XML produzido pelo analisador sintático.
+    QTextStream saida(&arquivoXML);
+    saida << xmlSintatico;
+    saida.flush();
+
+    // Verifica se houve erro durante a gravação.
+    if (saida.status() != QTextStream::Ok) {
+        arquivoXML.close();
+
+        QMessageBox::critical(
+            this,
+            "Erro na exportação",
+            "Ocorreu um erro ao gravar o arquivo XML sintático."
+            );
+        return;
+    }
+
+    arquivoXML.close();
+
+    // Confirma o resultado da exportação.
+    QMessageBox::information(
+        this,
+        "Exportação concluída",
+        "O XML sintático foi salvo com sucesso em:\n"
+            + caminhoXML
+        );
 }
 
 void MainWindow::gerarArvoreSintatica()
