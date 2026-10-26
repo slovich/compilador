@@ -418,6 +418,25 @@ bool AnalisadorSintatico::compileTerm()
 
         }
 
+    } else {
+        // Se nenhuma alternativa da regra term corresponder ao token atual,
+        // a expressão contém um termo inválido.
+        const Token *token = tokenAtual();
+
+        if (token != nullptr) {
+            erro = QStringLiteral(
+                       "Erro sintático na linha %1, coluna %2: "
+                       "termo inválido, encontrado '%3'.")
+                       .arg(token->linha)
+                       .arg(token->coluna)
+                       .arg(token->lexema);
+        } else {
+            erro = QStringLiteral(
+                "Erro sintático: esperado um termo, "
+                "mas o arquivo terminou.");
+        }
+
+        return false;
     }
 
     fecharTag(QStringLiteral("term"));
