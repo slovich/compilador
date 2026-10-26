@@ -13,6 +13,7 @@
 #include <QStandardItem>
 #include <QHeaderView>
 #include <QXmlStreamWriter>
+#include "dialogsobre.h"
 #include "analisadorlexico.h"
 #include "token.h"
 #include "realcelexico.h"
@@ -38,10 +39,9 @@ public:
 private slots:
     void on_treeView_dir_clicked(const QModelIndex &index);
     void on_pushButton_selecionar_clicked();
-
     void on_pushButton_exportar_clicked();
-
-    void on_actionSair_2_triggered();
+    void on_actionSair_2_triggered();    
+    void on_actionSobre_triggered();
 
 private:
     Ui::MainWindow *ui;

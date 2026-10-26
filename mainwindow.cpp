@@ -395,3 +395,10 @@ void MainWindow::on_actionSair_2_triggered()
     this->close();
 }
 
+
+void MainWindow::on_actionSobre_triggered()
+{
+    DialogSobre *sobre =  new DialogSobre;
+    sobre->show();
+}
+
